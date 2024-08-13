@@ -127,6 +127,17 @@ namespace StarRail_Launcher.Service
                 App.Current.UpdateObject = JsonConvert.DeserializeObject<UpdateModel>(json) ?? new();
             }
 
+            if (App.Current?.PkgUpdataModel != null)
+            {
+                App.Current.PkgUpdataModel.PkgVersion = await HtmlHelper.GetPkgVersionAsync();
+            }
+            else
+            {
+                // 初始化 PkgUpdataModel 或处理 null 情况
+                App.Current.PkgUpdataModel = new PkgUpdataModel();
+                App.Current.PkgUpdataModel.PkgVersion = await HtmlHelper.GetPkgVersionAsync();
+            }
+
             string newver = App.Current.UpdateObject.Version;
             bool requisiteUpdate = App.Current.UpdateObject.RequisiteUpdate;
             string version = Application.ResourceAssembly.GetName().Version.ToString();

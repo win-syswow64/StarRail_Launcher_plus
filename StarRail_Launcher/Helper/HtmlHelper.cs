@@ -8,9 +8,7 @@ namespace StarRail_Launcher.Core
 {
     public class HtmlHelper
     {
-        private const string Url = "https://api.xingdream.top/API/starrail.php";
-
-        public static async Task<JsonElement> GetAPIData()
+        public static async Task<JsonElement> GetAPIData(String Url)
         {
             try
             {
@@ -42,10 +40,61 @@ namespace StarRail_Launcher.Core
 
         public static async Task<string> GetInfoFromHtmlAsync(string tag)
         {
+            string Url = "https://api.nahidaya.top/API/starrail.php";
             try
             {
-                JsonElement data = await GetAPIData();
+                JsonElement data = await GetAPIData(Url);
                 return data.GetProperty(tag).ToString();
+            }
+            catch (KeyNotFoundException e)
+            {
+                Console.WriteLine($"Tag not found: {e.Message}");
+                return string.Empty;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Unexpected error: {e.Message}");
+                return string.Empty;
+            }
+        }
+
+        public static async Task<string> GetBackgroundImageUrlAsync()
+        {
+            string Url = "https://hyp-api.mihoyo.com/hyp/hyp-connect/api/getAllGameBasicInfo?launcher_id=jGHBHlcOq1&language=zh-cn";
+            try
+            {
+                JsonElement data = await GetAPIData(Url);
+                return data.GetProperty("data")
+                   .GetProperty("game_info_list")[1]
+                   .GetProperty("backgrounds")[0]
+                   .GetProperty("background")
+                   .GetProperty("url")
+                   .ToString();
+            }
+            catch (KeyNotFoundException e)
+            {
+                Console.WriteLine($"Tag not found: {e.Message}");
+                return string.Empty;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Unexpected error: {e.Message}");
+                return string.Empty;
+            }
+        }
+
+        public static async Task<string> GetPkgVersionAsync()
+        {
+            string Url = "https://hyp-api.mihoyo.com/hyp/hyp-connect/api/getGamePackages?launcher_id=jGHBHlcOq1&language=zh-cn";
+            try
+            {
+                JsonElement data = await GetAPIData(Url);
+                return data.GetProperty("data")
+                   .GetProperty("game_packages")[1]
+                   .GetProperty("main")
+                   .GetProperty("major")
+                   .GetProperty("version")
+                   .ToString();
             }
             catch (KeyNotFoundException e)
             {

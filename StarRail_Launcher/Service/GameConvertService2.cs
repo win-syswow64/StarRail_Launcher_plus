@@ -7,7 +7,10 @@ using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Text.Json;
 using StarRail_Launcher.Helper;
+using StarRail_Launcher.Core;
+using StarRail_Launcher.Models;
 
 namespace StarRail_Launcher.Service
 {
@@ -16,10 +19,6 @@ namespace StarRail_Launcher.Service
         private const string CN_DIRECTORY = "CnFile";
 
         private const string GLOBAL_DIRECTORY = "GlobalFile";
-        // private const string YUANSHEN_DATA = "YuanShen_Data";
-        // private const string GENSHINIMPACT_DATA = "GenshinImpact_Data";
-        // private const string YUANSHEN_EXE = "YuanShen.exe";
-        // private const string GENSHINIMPACT_EXE = "GenshinImpact.exe";
 
         private const string STARRAIL_DATA = "StarRail_Data";
         private const string STARRAIL_EXE = "StarRail.exe";
@@ -49,23 +48,92 @@ namespace StarRail_Launcher.Service
         /// <exception cref="NotImplementedException"></exception>
         /// 
 
-        public bool CheckPackageVersion(string scheme, SettingsPageViewModel vm)
+        public async Task<bool> CheckPackageVersionAsync(string scheme, SettingsPageViewModel vm)
         {
-            string pkgfile = App.Current.UpdateObject.PkgVersion;
+            if (App.Current.PkgUpdataModel.PkgVersion == "" || App.Current.PkgUpdataModel.PkgVersion == null || App.Current.PkgUpdataModel.PkgVersion == string.Empty)
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    vm.ConvertingLog = $"获取PKG版本号失败，尝试重新获取{i + 1}";
+                    if (App.Current?.PkgUpdataModel != null)
+                    {
+                        App.Current.PkgUpdataModel.PkgVersion = await HtmlHelper.GetPkgVersionAsync();
+                    }
+                    else
+                    {
+                        // 初始化 PkgUpdataModel 或处理 null 情况
+                        App.Current.PkgUpdataModel = new PkgUpdataModel();
+                        App.Current.PkgUpdataModel.PkgVersion = await HtmlHelper.GetPkgVersionAsync();
+                    }
+                    if (App.Current.PkgUpdataModel.PkgVersion != "" || App.Current.PkgUpdataModel.PkgVersion != null || App.Current.PkgUpdataModel.PkgVersion != string.Empty)
+                    {
+                        break;
+                    }
+                    await Task.Delay(1000);
+                }
+                if (App.Current.PkgUpdataModel.PkgVersion == "" || App.Current.PkgUpdataModel.PkgVersion == null || App.Current.PkgUpdataModel.PkgVersion == string.Empty)
+                {
+                    vm.ConvertingLog = $"获取PKG版本号失败，请检查你的网络设置。";
+                    return false;
+                }
+            }
+            string pkgfile = App.Current.PkgUpdataModel.PkgVersion + "-1";
             if (!File.Exists($"{scheme}/{pkgfile}"))
             {
-                vm.ConvertingLog = $"{App.Current.Language.NewPkgVer} : [{pkgfile}]\r\n";
-                ProcessStartInfo info = new()
+                vm.ConvertingLog = $"{App.Current.Language.NewPkgVer} : [{pkgfile}]\r\n即将下载最新版本转换包。\r\n请将下载好的转换包移动至本软件软件目录下。";
+                if (scheme == CN_DIRECTORY)
                 {
-                    FileName = "http://pan.115832958.xyz:25212/s/85f3",
-                    UseShellExecute = true,
-                };
-                 Process.Start(info);
+                    ProcessStartInfo info = new()
+                    {
+                        FileName = "https://download.115832958.xyz/?game=starrail&ver=cnfile",
+                        UseShellExecute = true,
+                    };
+                    Process.Start(info);
+                }
+                else
+                {
+                    ProcessStartInfo info = new()
+                    {
+                        FileName = "https://download.115832958.xyz/?game=starrail&ver=globalfile",
+                        UseShellExecute = true,
+                    };
+                    Process.Start(info);
+                }
                 return false;
             }
             else
             {
                 return true;
+            }
+        }
+
+        public async Task GetFilesNameFromJson(string jsonFilePath)
+        {
+            try
+            {
+                if (File.Exists(jsonFilePath))
+                {
+                    string json = await File.ReadAllTextAsync(jsonFilePath);
+                    List<string> gameFileList = JsonSerializer.Deserialize<List<string>>(json);
+
+                    foreach (string file in gameFileList)
+                    {
+                        // 处理文件路径
+                        string temp = file.Replace(Path.Combine(Environment.CurrentDirectory, ReplaceSourceDirectory), "");
+                        GameFileList.Add(temp);
+                    }
+
+                    // 删除 JSON 文件
+                    File.Delete(jsonFilePath);
+                }
+                else
+                {
+                    MessageBox.Show("GameFileList.json 文件不存在");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
         }
 
@@ -90,9 +158,10 @@ namespace StarRail_Launcher.Service
                 {
                     //直接从 bak 还原
                     vm.StateIndicator = "正在获取备份清单";
-                    if (Directory.Exists(Path.Combine(CurrentPath, RestoreSourceDirectory)))
+                    string jsonFilePath = Path.Combine(CurrentPath, "Config", "GameFileList.json");
+                    if (File.Exists(jsonFilePath))
                     {
-                        await GetFilesName(Path.Combine(CurrentPath, RestoreSourceDirectory));
+                        await GetFilesNameFromJson(jsonFilePath);
                         vm.ConvertingLog += $"正在还原客户端\r\n";
                         await RestoreGameFiles(vm);
                     }
@@ -105,7 +174,7 @@ namespace StarRail_Launcher.Service
                 else if (Directory.Exists(Path.Combine(CurrentPath, PkgPerfix)))
                 {
                     //直接从 pkg解压后的目录 处替换
-                    bool up = CheckPackageVersion(ReplaceSourceDirectory, vm);
+                    bool up = await CheckPackageVersionAsync(ReplaceSourceDirectory, vm);
                     if (!up)
                     {
                         Directory.Delete($"{CurrentPath}/{ReplaceSourceDirectory}", true);
@@ -123,7 +192,7 @@ namespace StarRail_Launcher.Service
                     //解压 pkg 文件
                     if (Decompress(PkgPerfix))
                     {
-                        bool up = CheckPackageVersion(ReplaceSourceDirectory, vm);
+                        bool up = await CheckPackageVersionAsync(ReplaceSourceDirectory, vm);
                         if (!up)
                         {
                             vm.ConvertState = false;
@@ -165,19 +234,27 @@ namespace StarRail_Launcher.Service
                 FileInfo[] files = directoryInfo.GetFiles();
                 foreach (FileInfo file in files)
                 {
-                    string temp =
-                        file.FullName.Replace(Path.Combine(Environment.CurrentDirectory, ReplaceSourceDirectory), "");
+                    string temp = file.FullName.Replace(Path.Combine(Environment.CurrentDirectory, ReplaceSourceDirectory), "");
                     GameFileList.Add(temp);
                 }
-
                 DirectoryInfo[] dirs = directoryInfo.GetDirectories();
                 if (dirs.Length > 0)
                 {
                     foreach (DirectoryInfo dir in dirs)
                     {
-                        GetFilesName(dir.FullName);
+                        await GetFilesName(dir.FullName);
                     }
                 }
+
+                // 将 GameFileList 序列化为 JSON 并保存到 Config 文件夹中
+                string json = JsonSerializer.Serialize(GameFileList);
+                string configDirectory = Path.Combine(Environment.CurrentDirectory, "Config");
+                if (!Directory.Exists(configDirectory))
+                {
+                    Directory.CreateDirectory(configDirectory);
+                }
+                string filePath = Path.Combine(configDirectory, "GameFileList.json");
+                await File.WriteAllTextAsync(filePath, json);
             }
             catch (Exception ex)
             {

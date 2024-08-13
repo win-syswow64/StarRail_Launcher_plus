@@ -98,9 +98,19 @@ namespace StarRail_Launcher.Service
                 if (!App.Current.DataModel.IsWebBg)
                 {
                     vm.Background.ImageSource = new BitmapImage(uri);
-                    string bgurl = await HtmlHelper.GetInfoFromHtmlAsync("background");
+                    if (App.Current?.BackgroundModel != null)
+                    {
+                        App.Current.BackgroundModel.BackgroundUrl = await HtmlHelper.GetBackgroundImageUrlAsync();
+                    }
+                    else
+                    {
+                        // 初始化 PkgUpdataModel 或处理 null 情况
+                        App.Current.BackgroundModel = new BackgroundModel();
+                        App.Current.BackgroundModel.BackgroundUrl = await HtmlHelper.GetBackgroundImageUrlAsync();
+                    }
+                    string bgurl = App.Current.BackgroundModel.BackgroundUrl;
                     var client = new HttpClient(new HttpClientHandler { AutomaticDecompression = System.Net.DecompressionMethods.All });
-                    if (bgurl != null)
+                    if (bgurl != null && bgurl != "null" && bgurl != string.Empty)
                     {
                         try
                         {
@@ -114,11 +124,12 @@ namespace StarRail_Launcher.Service
                             vm.Background.ImageSource = newBitmap;
                             vm.Background.Stretch = Stretch.UniformToFill;
                         }
-                        catch (Exception ex)
+                        catch (Exception e)
                         {
-                            MessageBox.Show($"下载图片失败，错误信息: \n{ex}");
+                            MessageBox.Show($"下载图片失败! ");
                             vm.Background.ImageSource = new BitmapImage(uri);
                             vm.Background.Stretch = Stretch.UniformToFill;
+                            Console.WriteLine($"Request error: {e.Message}");
                         }
                     }
                     else

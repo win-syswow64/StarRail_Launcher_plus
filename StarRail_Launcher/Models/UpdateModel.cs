@@ -12,4 +12,14 @@
         public bool RequisiteUpdate { get; set; }
 
     }
+
+    public class PkgUpdataModel
+    {
+        public string PkgVersion { get; set; }
+    }
+
+    public class BackgroundModel
+    {
+        public string BackgroundUrl { get; set; }
+    }
 }

@@ -100,14 +100,14 @@ namespace StarRail_Launcher.ViewModels
                     NegativeButtonText = "GitHub"
                 })) != MessageDialogResult.Affirmative)
             {
-                FileHelper.OpenUrl("https://github.com/DawnFz/Genshin.Launcher.Plus");
+                FileHelper.OpenUrl("https://github.com/win-syswow64/StarRail_Launcher_plus");
             }
         }
 
         public ICommand OpenQQGroupUrlCommand { get; set; }
         private void OpenQQGroupUrl()
         {
-            FileHelper.OpenUrl("https://jq.qq.com/?_wv=1027&k=Kxt00f0Y");
+            FileHelper.OpenUrl("https://qm.qq.com/q/UZWuLb38om");
         }
 
         public ICommand ExitProgramCommand { get; set; }

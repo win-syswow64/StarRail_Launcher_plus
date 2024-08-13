@@ -90,13 +90,13 @@
                     <ImageBrush ImageSource="/Images/AddUserButton.png"/>
                 </Button.Background>
             </Button>
-            <!-- <Button x:Name="About" Grid.Row="6" -->
-            <!--         Style="{StaticResource SideButtonStyle}" -->
-            <!--         Command="{Binding OpenAboutCommand}"> -->
-            <!--     <Button.Background> -->
-            <!--         <ImageBrush ImageSource="/Images/AboutButton.png"/> -->
-            <!--     </Button.Background> -->
-            <!-- </Button> -->
+            <Button x:Name="About" Grid.Row="6"
+                    Style="{StaticResource SideButtonStyle}"
+                    Command="{Binding OpenAboutCommand}" Margin="0,1,0,0" VerticalAlignment="Top">
+                <Button.Background>
+                    <ImageBrush ImageSource="/Images/AboutButton.png"/>
+                </Button.Background>
+            </Button>
         </Grid>
         <Grid Height="45" VerticalAlignment="Top" Background="#FF272727" WindowChrome.IsHitTestVisibleInChrome="True">
             <Button x:Name="ExitButton" 

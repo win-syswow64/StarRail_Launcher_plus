@@ -47,7 +47,7 @@ namespace StarRail_Launcher
 
         private void Help_Click(object sender, RoutedEventArgs e)
         {
-            FileHelper.OpenUrl("https://www.dawnfz.com/document/");
+            FileHelper.OpenUrl("https://qm.qq.com/q/UZWuLb38om");
         }
 
         private void MainSizeBinding()

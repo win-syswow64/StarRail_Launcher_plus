@@ -86,6 +86,10 @@ namespace StarRail_Launcher
 
         public UpdateModel? UpdateObject { get; set; }
 
+        public PkgUpdataModel? PkgUpdataModel { get; set; }
+
+        public BackgroundModel? BackgroundModel { get; set; }
+
         public MainWindow ThisMainWindow { get; set; }
 
         public bool IsLoadUpdated { get; set; }
