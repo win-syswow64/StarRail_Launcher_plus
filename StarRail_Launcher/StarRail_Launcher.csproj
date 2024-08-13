@@ -1,0 +1,89 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+<!--    <_SuppressWpfTrimError>true</_SuppressWpfTrimError>-->
+<!--    <PublishTrimmed>true</PublishTrimmed>-->
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <Version>1.1.0.0</Version>
+    <StartupObject>StarRail_Launcher.App</StartupObject>
+    <ApplicationIcon>starrail.ico</ApplicationIcon>
+    <IsPublishable>True</IsPublishable>
+    <Platforms>AnyCPU;x64</Platforms>
+    <DebugType>embedded</DebugType>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Authors>DawnFz &amp; 周树人&amp; Catboss</Authors>
+    <Product>星铁启动器</Product>
+    <Company>DawnFz &amp; 周树人&amp; Catboss</Company>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Images\AboutButton.png" />
+    <None Remove="Images\AddUserButton.png" />
+    <None Remove="Images\ImagesButton.png" />
+    <None Remove="Images\MainBackground.jpg" />
+    <None Remove="Images\SettingsButton.png" />
+    <None Remove="Images\TencentGroupButton.png" />
+    <None Remove="Images\starrail.png" />
+	<None Remove="StaticRes\PCGameSDK.dll" />
+    <None Remove="StaticRes\Update.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="starrail.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\starrail.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+	<Resource Include="StaticRes\PCGameSDK.dll">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	</Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0-preview3" />
+    <PackageReference Include="MahApps.Metro" Version="2.4.9" />
+    <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\AboutButton.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\ImagesButton.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\TencentGroupButton.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\SettingsButton.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\MainBackground.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\AddUserButton.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="StaticRes\Update.dll">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ApplicationDefinition Update="App.xaml">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ApplicationDefinition>
+  </ItemGroup>
+
+</Project>
