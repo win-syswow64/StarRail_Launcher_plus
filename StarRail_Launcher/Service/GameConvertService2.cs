@@ -266,6 +266,59 @@ namespace StarRail_Launcher.Service
         /// 获取当前需要的Pkg前缀
         /// </summary>
         /// <returns></returns>
+        /// 
+
+        public string GetCpsValue()
+        {
+            TextReader iniFile = null;
+            string strLine = null;
+            string currentRoot = null;
+            string iniFilePath = Path.Combine(GamePath ?? "", "Config.ini");
+            if (File.Exists(iniFilePath))
+            {
+                try
+                {
+                    iniFile = new StreamReader(iniFilePath);
+                    strLine = iniFile.ReadLine();
+                    while (strLine != null)
+                    {
+                        strLine = strLine.Trim();
+                        if (strLine != string.Empty)
+                        {
+                            if (strLine.StartsWith("[") && strLine.EndsWith("]"))
+                            {
+                                currentRoot = strLine.Substring(1, strLine.Length - 2);
+                            }
+                            else
+                            {
+                                string[] keyPair = strLine.Split(new char[] { '=' }, 2);
+                                if (keyPair[0] == "cps")
+                                {
+                                    return keyPair.Length > 1 ? keyPair[1] : null;
+                                }
+                            }
+                        }
+                        strLine = iniFile.ReadLine();
+                    }
+                }
+                catch { }
+                finally
+                {
+                    if (iniFile != null)
+                        iniFile.Close();
+                }
+            }
+            else
+            {
+                if (!Directory.Exists(@"Config"))
+                {
+                    Directory.CreateDirectory("Config");
+                }
+            }
+            return null;
+        }
+
+
         public string GetCurrentSchemeName()
         {
             // if (File.Exists(Path.Combine(GamePath, YUANSHEN_EXE)))
@@ -276,7 +329,7 @@ namespace StarRail_Launcher.Service
             // {
             //     return GLOBAL_DIRECTORY;
             // }
-            switch (App.Current.DataModel.Cps)
+            switch (GetCpsValue())
             {
                 case "gw_PC":
                     return CN_DIRECTORY;
@@ -342,7 +395,7 @@ namespace StarRail_Launcher.Service
         public async Task RestoreGameFiles(SettingsPageViewModel vm)
         {
             vm.StateIndicator = "开始还原文件";
-            string suffix = Scheme == GLOBAL_DIRECTORY ? "cn" : "global";
+            string suffix = GetCurrentSchemeName() == GLOBAL_DIRECTORY ? "cn" : "global";
 
             vm.ConvertingLog += "开始还原文件\r\n";
             foreach (string file in GameFileList)
@@ -386,7 +439,7 @@ namespace StarRail_Launcher.Service
         public async Task BackupGameFile(SettingsPageViewModel vm)
         {
             vm.StateIndicator = "开始备份文件";
-            string suffix = Scheme == GLOBAL_DIRECTORY ? "global" : "cn";
+            string suffix = GetCurrentSchemeName() == GLOBAL_DIRECTORY ? "global" : "cn";
 
             foreach (string file in GameFileList)
             {
