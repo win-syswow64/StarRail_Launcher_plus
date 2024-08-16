@@ -48,7 +48,57 @@ namespace StarRail_Launcher.Service
         /// <exception cref="NotImplementedException"></exception>
         /// 
 
-        public async Task<bool> CheckPackageVersionAsync(string scheme, SettingsPageViewModel vm)
+        public string ConfigValue(String code)
+        {
+            TextReader iniFile = null;
+            string strLine = null;
+            string currentRoot = null;
+            string iniFilePath = Path.Combine(GamePath ?? "", "Config.ini");
+            if (File.Exists(iniFilePath))
+            {
+                try
+                {
+                    iniFile = new StreamReader(iniFilePath);
+                    strLine = iniFile.ReadLine();
+                    while (strLine != null)
+                    {
+                        strLine = strLine.Trim();
+                        if (strLine != string.Empty)
+                        {
+                            if (strLine.StartsWith("[") && strLine.EndsWith("]"))
+                            {
+                                currentRoot = strLine.Substring(1, strLine.Length - 2);
+                            }
+                            else
+                            {
+                                string[] keyPair = strLine.Split(new char[] { '=' }, 2);
+                                if (keyPair[0] == code)
+                                {
+                                    return keyPair.Length > 1 ? keyPair[1] : null;
+                                }
+                            }
+                        }
+                        strLine = iniFile.ReadLine();
+                    }
+                }
+                catch { }
+                finally
+                {
+                    if (iniFile != null)
+                        iniFile.Close();
+                }
+            }
+            else
+            {
+                if (!Directory.Exists(@"Config"))
+                {
+                    Directory.CreateDirectory("Config");
+                }
+            }
+            return null;
+        }
+
+        public async Task<int> CheckPackageVersionAsync(string scheme, SettingsPageViewModel vm)
         {
             if (App.Current.PkgUpdataModel.PkgVersion == "" || App.Current.PkgUpdataModel.PkgVersion == null || App.Current.PkgUpdataModel.PkgVersion == string.Empty)
             {
@@ -74,13 +124,20 @@ namespace StarRail_Launcher.Service
                 if (App.Current.PkgUpdataModel.PkgVersion == "" || App.Current.PkgUpdataModel.PkgVersion == null || App.Current.PkgUpdataModel.PkgVersion == string.Empty)
                 {
                     vm.ConvertingLog = $"获取PKG版本号失败，请检查你的网络设置。";
-                    return false;
+                    return 1;
                 }
             }
+            string gameversion = ConfigValue("game_version");
             string pkgfile = App.Current.PkgUpdataModel.PkgVersion + "-1";
+            if (gameversion != App.Current.PkgUpdataModel.PkgVersion)
+            {
+                vm.ConvertingLog = $"当前游戏版本过低，请前往米哈游启动器更新游戏。\r\n当前游戏版本号：{gameversion}\r\n当前从API获取的游戏版本号：{App.Current.PkgUpdataModel.PkgVersion}\r\n";
+                return 1;
+            }
             if (!File.Exists($"{scheme}/{pkgfile}"))
             {
                 vm.ConvertingLog = $"{App.Current.Language.NewPkgVer} : [{pkgfile}]\r\n即将下载最新版本转换包。\r\n请将下载好的转换包移动至本软件软件目录下。";
+                await Task.Delay(1000);
                 if (scheme == CN_DIRECTORY)
                 {
                     ProcessStartInfo info = new()
@@ -99,11 +156,11 @@ namespace StarRail_Launcher.Service
                     };
                     Process.Start(info);
                 }
-                return false;
+                return 0;
             }
             else
             {
-                return true;
+                return 2;
             }
         }
 
@@ -174,17 +231,31 @@ namespace StarRail_Launcher.Service
                 else if (Directory.Exists(Path.Combine(CurrentPath, PkgPerfix)))
                 {
                     //直接从 pkg解压后的目录 处替换
-                    bool up = await CheckPackageVersionAsync(ReplaceSourceDirectory, vm);
-                    if (!up)
+                    int up = await CheckPackageVersionAsync(ReplaceSourceDirectory, vm);
+                    switch (up)
                     {
-                        Directory.Delete($"{CurrentPath}/{ReplaceSourceDirectory}", true);
-                        vm.ConvertState = false;
-                        return;
-                    }
+                        case 1:
+                            {
+                                vm.ConvertState = false;
+                                break;
+                            }
 
-                    vm.StateIndicator = "正在获取文件清单";
-                    await GetFilesName(Path.Combine(CurrentPath, ReplaceSourceDirectory));
-                    await ReplaceGameFiles(vm);
+                        case 2:
+                            {
+                                vm.StateIndicator = "正在获取文件清单";
+                                await GetFilesName(Path.Combine(CurrentPath, ReplaceSourceDirectory));
+                                await ReplaceGameFiles(vm);
+                                break;
+                            }
+
+                        default:
+                            {
+                                Directory.Delete($"{CurrentPath}/{ReplaceSourceDirectory}", true);
+                                vm.ConvertState = false;
+                                break;
+                            }
+                    }
+                    return;
                 }
                 else if (File.Exists(Path.Combine(CurrentPath, $"{PkgPerfix}.pkg")))
                 {
@@ -192,18 +263,32 @@ namespace StarRail_Launcher.Service
                     //解压 pkg 文件
                     if (Decompress(PkgPerfix))
                     {
-                        bool up = await CheckPackageVersionAsync(ReplaceSourceDirectory, vm);
-                        if (!up)
+                        int up = await CheckPackageVersionAsync(ReplaceSourceDirectory, vm);
+                        switch (up)
                         {
-                            vm.ConvertState = false;
-                            Directory.Delete($"{CurrentPath}/{ReplaceSourceDirectory}", true);
-                            return;
-                        }
+                            case 1:
+                                {
+                                    vm.ConvertState = false;
+                                    break;
+                                }
 
-                        //直接从 pkg解压后的目录 处替换
-                        vm.StateIndicator = "正在获取文件清单";
-                        await GetFilesName(Path.Combine(CurrentPath, ReplaceSourceDirectory));
-                        await ReplaceGameFiles(vm);
+                            case 2:
+                                {
+                                    //直接从 pkg解压后的目录 处替换
+                                    vm.StateIndicator = "正在获取文件清单";
+                                    await GetFilesName(Path.Combine(CurrentPath, ReplaceSourceDirectory));
+                                    await ReplaceGameFiles(vm);
+                                    break;
+                                }
+
+                            default:
+                                {
+                                    Directory.Delete($"{CurrentPath}/{ReplaceSourceDirectory}", true);
+                                    vm.ConvertState = false;
+                                    break;
+                                }
+                        }
+                        return;
                     }
                     else
                     {
@@ -268,55 +353,7 @@ namespace StarRail_Launcher.Service
         /// <returns></returns>
         /// 
 
-        public string GetCpsValue()
-        {
-            TextReader iniFile = null;
-            string strLine = null;
-            string currentRoot = null;
-            string iniFilePath = Path.Combine(GamePath ?? "", "Config.ini");
-            if (File.Exists(iniFilePath))
-            {
-                try
-                {
-                    iniFile = new StreamReader(iniFilePath);
-                    strLine = iniFile.ReadLine();
-                    while (strLine != null)
-                    {
-                        strLine = strLine.Trim();
-                        if (strLine != string.Empty)
-                        {
-                            if (strLine.StartsWith("[") && strLine.EndsWith("]"))
-                            {
-                                currentRoot = strLine.Substring(1, strLine.Length - 2);
-                            }
-                            else
-                            {
-                                string[] keyPair = strLine.Split(new char[] { '=' }, 2);
-                                if (keyPair[0] == "cps")
-                                {
-                                    return keyPair.Length > 1 ? keyPair[1] : null;
-                                }
-                            }
-                        }
-                        strLine = iniFile.ReadLine();
-                    }
-                }
-                catch { }
-                finally
-                {
-                    if (iniFile != null)
-                        iniFile.Close();
-                }
-            }
-            else
-            {
-                if (!Directory.Exists(@"Config"))
-                {
-                    Directory.CreateDirectory("Config");
-                }
-            }
-            return null;
-        }
+        
 
 
         public string GetCurrentSchemeName()
@@ -329,7 +366,7 @@ namespace StarRail_Launcher.Service
             // {
             //     return GLOBAL_DIRECTORY;
             // }
-            switch (GetCpsValue())
+            switch (ConfigValue("cps"))
             {
                 case "gw_PC":
                     return CN_DIRECTORY;
