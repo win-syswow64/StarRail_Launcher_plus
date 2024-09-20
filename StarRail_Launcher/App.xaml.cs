@@ -91,6 +91,7 @@ namespace StarRail_Launcher
         public BackgroundModel? BackgroundModel { get; set; }
 
         public MainWindow ThisMainWindow { get; set; }
+        public NoticeModel? NoticeObject { get; set; }
 
         public bool IsLoadUpdated { get; set; }
         public bool IsLoadingBackground { get; set; }

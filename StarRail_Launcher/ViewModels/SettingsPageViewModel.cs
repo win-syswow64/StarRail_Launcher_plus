@@ -56,6 +56,7 @@ namespace StarRail_Launcher.ViewModels
             SetMainBackgroundCommand = new RelayCommand(SetMainBackground);
             SwitchLanguagePageCommand = new RelayCommand(SwitchLanguagePage);
             OpenPkgDownloadUrlCommand = new RelayCommand(OpenPkgDownloadUrl);
+            OpenPrePkgDownloadUrlCommand = new RelayCommand(OpenPrePkgDownloadUrl);
             OpenApplicationFolderCommand = new RelayCommand(OpenApplicationFolder);
             RecoverDefaultSizeToMainCommand = new RelayCommand(RecoverDefaultSizeToMain);
 
@@ -493,7 +494,27 @@ namespace StarRail_Launcher.ViewModels
         public ICommand OpenPkgDownloadUrlCommand { get; set; }
         private void OpenPkgDownloadUrl()
         {
-            FileHelper.OpenUrl("http://pan.115832958.xyz:25212/s/85f3");
+            if (new ConvertService().GetCurrentSchemeName() == "CnFile")
+            {
+                FileHelper.OpenUrl("https://download.ganyu.us.kg/now/StarRail/GlobalFile.pkg");
+            }
+            else
+            {
+                FileHelper.OpenUrl("https://download.ganyu.us.kg/now/StarRail/CnFile.pkg");
+            }
+        }
+
+        public ICommand OpenPrePkgDownloadUrlCommand { get; set; }
+        private void OpenPrePkgDownloadUrl()
+        {
+            if (new ConvertService().GetCurrentSchemeName() == "CnFile")
+            {
+                FileHelper.OpenUrl("https://download.ganyu.us.kg/pre/StarRail/GlobalFile.pkg");
+            }
+            else
+            {
+                FileHelper.OpenUrl("https://download.ganyu.us.kg/pre/StarRail/CnFile.pkg");
+            }
         }
 
         //设置页面手动检查更新命令

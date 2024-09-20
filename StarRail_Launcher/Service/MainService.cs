@@ -8,6 +8,7 @@ using StarRail_Launcher.Core;
 using StarRail_Launcher.Models;
 using StarRail_Launcher.Service.IService;
 using StarRail_Launcher.ViewModels;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace StarRail_Launcher.Service
@@ -20,6 +21,15 @@ namespace StarRail_Launcher.Service
             CheckConfig(main);
             MainBackgroundLoad(vm);
             LoadQQGroups(vm);
+        }
+
+        /// <summary>
+        /// 异步实现Main中的通知
+        /// </summary>
+        public async Task CheckNotice()
+        {
+            string json = await HtmlHelper.GetInfoFromHtmlAsync("Notice");
+            App.Current.NoticeObject = JsonConvert.DeserializeObject<NoticeModel>(json) ?? new();
         }
 
         /// <summary>

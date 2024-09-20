@@ -1,4 +1,5 @@
 ﻿using StarRail_Launcher.ViewModels;
+using System.Threading.Tasks;
 
 namespace StarRail_Launcher.Service.IService
 {
@@ -17,5 +18,10 @@ namespace StarRail_Launcher.Service.IService
         /// <param name="vm">MainWindowViewModel的实例</param>
         /// <returns></returns>
         void MainBackgroundLoad(MainWindowViewModel vm);
+
+        /// <summary>
+        /// 异步实现Main中的通知
+        /// </summary>
+        Task CheckNotice();
     }
 }

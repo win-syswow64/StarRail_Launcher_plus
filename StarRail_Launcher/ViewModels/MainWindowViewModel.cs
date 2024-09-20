@@ -4,6 +4,7 @@ using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Windows;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using MahApps.Metro.Controls.Dialogs;
 using System.Windows.Input;
@@ -33,7 +34,8 @@ namespace StarRail_Launcher.ViewModels
 
             Title = $"{languages.MainTitle} {Application.ResourceAssembly.GetName().Version}";
             App.Current.DataModel.EXEname(Path.GetFileName(Environment.ProcessPath));
-           
+
+            SetNotice();
         }
 
         public IMainWindowService MainService { get; set; }
@@ -66,6 +68,20 @@ namespace StarRail_Launcher.ViewModels
             {
                 App.Current.DataModel.MainHeight = value;
                 App.Current.DataModel.SaveDataToFile();
+            }
+        }
+
+        private async Task SetNotice()
+        {
+            await MainService.CheckNotice();
+            if (App.Current.NoticeObject.Code == 200)
+            {
+                await dialogCoordinator.ShowMessageAsync(
+                   this, languages.TipsStr,
+                   App.Current.NoticeObject.NoticeMsg,
+                   MessageDialogStyle.Affirmative,
+                   new MetroDialogSettings()
+                   { AffirmativeButtonText = languages.Determine });
             }
         }
 

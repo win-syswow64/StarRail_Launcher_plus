@@ -142,7 +142,7 @@ namespace StarRail_Launcher.Service
                 {
                     ProcessStartInfo info = new()
                     {
-                        FileName = "https://download.115832958.xyz/?game=starrail&ver=cnfile",
+                        FileName = "https://download.ganyu.us.kg/now/StarRail/CnFile.pkg",
                         UseShellExecute = true,
                     };
                     Process.Start(info);
@@ -151,7 +151,7 @@ namespace StarRail_Launcher.Service
                 {
                     ProcessStartInfo info = new()
                     {
-                        FileName = "https://download.115832958.xyz/?game=starrail&ver=globalfile",
+                        FileName = "https://download.ganyu.us.kg/now/StarRail/GlobalFile.pkg",
                         UseShellExecute = true,
                     };
                     Process.Start(info);
