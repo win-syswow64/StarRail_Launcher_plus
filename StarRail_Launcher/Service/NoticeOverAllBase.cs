@@ -39,10 +39,10 @@ namespace StarRail_Launcher.Service
             {
                 string gameClientType = App.Current.DataModel.Cps switch
                 {
-                    "gw_PC" => App.Current.Language.GameClientTypePStr,
+                    "mihoyo" => App.Current.Language.GameClientTypePStr,
                     // todo bilibili
                     "bilibili" => App.Current.Language.GameClientTypeBStr,
-                    "hoyoverse_PC" => App.Current.Language.GameClientTypeMStr,
+                    "hoyoverse" => App.Current.Language.GameClientTypeMStr,
                     _ => App.Current.Language.GameClientTypeNullStr,
                 };
                 return $"{App.Current.Language.GameClientStr} : {gameClientType} ";
@@ -57,18 +57,18 @@ namespace StarRail_Launcher.Service
             {
                 int index = App.Current.DataModel.Cps switch
                 {
-                    "gw_PC" => 0,
+                    "mihoyo" => 0,
                     // todo bilibili
                     "bilibili" => 1,
-                    "hoyoverse_PC" => -1,
+                    "hoyoverse" => 2,
                     _ => -1,
                 };
                 string gameClientType = index switch
                 {
                     0 => App.Current.Language.GameClientTypePStr,
                     // todo bilibili
-                     1 => App.Current.Language.GameClientTypeBStr,
-                    -1 => App.Current.Language.GameClientTypeMStr,
+                    1 => App.Current.Language.GameClientTypeBStr,
+                    2 => App.Current.Language.GameClientTypeMStr,
                     _ => App.Current.Language.GameClientTypeNullStr,
                 };
                 SwitchPort = $"{App.Current.Language.GameClientStr} : {gameClientType} ";
@@ -77,12 +77,12 @@ namespace StarRail_Launcher.Service
             set
             {
                 SetProperty(ref _GamePortListIndex, value);
-                if (App.Current.DataModel.Cps != "hoyoverse_PC")
+                if (App.Current.DataModel.Cps != "hoyoverse")
                 {
                     switch (value)
                     {
                         case 0:
-                            App.Current.DataModel.Cps = "gw_PC";
+                            App.Current.DataModel.Cps = "mihoyo";
                             App.Current.DataModel.Channel = 1;
                             App.Current.DataModel.Sub_channel = 1;
                             if (File.Exists(Path.Combine(App.Current.DataModel.GamePath, "StarRail_Data/Plugins/PCGameSDK.dll")))
@@ -151,7 +151,7 @@ namespace StarRail_Launcher.Service
             {
                 return App.Current.DataModel.Cps switch
                 {
-                    "hoyoverse_PC" => "Hidden",
+                    "hoyoverse" => "Hidden",
                     _ => "Visible",
                 };
             }

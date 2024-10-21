@@ -69,12 +69,26 @@ namespace StarRail_Launcher.Core
             }
         }
 
+        // 获取实际存在的节名，不区分大小写
+        private string FindExistingSectionName(string sectionName)
+        {
+            foreach (SectionPair sectionPair in keyPairs.Keys)
+            {
+                if (sectionPair.Section.Equals(sectionName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return sectionPair.Section; // 返回找到的实际节名
+                }
+            }
+            return sectionName; // 没有找到则返回传入的节名
+        }
+
         /// <summary>
         /// 根据类型返回相应内容
         /// </summary>
         public string GetSetting(string sectionName, string settingName, int i = 0)
         {
             SectionPair sectionPair;
+            sectionName = FindExistingSectionName(sectionName);  // 找到实际存在的节名
             sectionPair.Section = sectionName;
             sectionPair.Key = settingName;
             return i switch
@@ -88,12 +102,14 @@ namespace StarRail_Launcher.Core
         public void AddSetting(string sectionName, string settingName, string settingValue)
         {
             SectionPair sectionPair;
+            sectionName = FindExistingSectionName(sectionName);  // 找到实际存在的节名
             sectionPair.Section = sectionName;
             sectionPair.Key = settingName;
             if (keyPairs.ContainsKey(sectionPair))
                 keyPairs.Remove(sectionPair);
             keyPairs.Add(sectionPair, settingValue);
         }
+
 
         public void SaveSettings()
         {

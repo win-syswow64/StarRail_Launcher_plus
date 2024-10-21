@@ -47,7 +47,7 @@ namespace StarRail_Launcher.ViewModels
             // var gameParser = new IniParser(Path.Combine(App.Current.DataModel.ga ?? "", "Config.ini"));
             var cps = App.Current.DataModel.gameparser.GetSetting("General", "cps", 0);
             //判断isGlobal值，为True时为Cn，否则为Global
-            string gamePort = cps=="hoyoverse_PC" ? "Global" : "CN";
+            string gamePort = cps=="hoyoverse" ? "Global" : "CN";
             if (Name != null && Name != string.Empty)
             {
                 string userdata = RegistryService.GetFromRegistry(Name, gamePort,IsSaveGameConfig);
