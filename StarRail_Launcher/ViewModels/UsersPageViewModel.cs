@@ -46,6 +46,17 @@ namespace StarRail_Launcher.ViewModels
             // bool isGlobal = !File.Exists(Path.Combine(App.Current.DataModel.GamePath, "YuanShen.exe"));
             // var gameParser = new IniParser(Path.Combine(App.Current.DataModel.ga ?? "", "Config.ini"));
             var cps = App.Current.DataModel.gameparser.GetSetting("General", "cps", 0);
+            switch (cps)
+            {
+                case "gw_PC":
+                    cps = "mihoyo";
+                    break;
+                case "hoyoverse_PC":
+                    cps = "hoyoverse";
+                    break;
+                default:
+                    break;
+            }
             //判断isGlobal值，为True时为Cn，否则为Global
             string gamePort = cps=="hoyoverse" ? "Global" : "CN";
             if (Name != null && Name != string.Empty)

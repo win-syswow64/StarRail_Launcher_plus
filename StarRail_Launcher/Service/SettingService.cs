@@ -36,6 +36,8 @@ namespace StarRail_Launcher.Service
             vm.StateIndicator = App.Current.Language.StateIndicatorDefault;
             vm.IsMihoyo = App.Current.DataModel.Cps switch
             {
+                "gw_PC" => 0,
+                "hoyoverse_PC" => 2,
                 "mihoyo" => 0,
                 "bilibili" => 1,
                 "hoyoverse" => 2,

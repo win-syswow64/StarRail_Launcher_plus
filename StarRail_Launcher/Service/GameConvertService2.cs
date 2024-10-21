@@ -36,8 +36,21 @@ namespace StarRail_Launcher.Service
         public ConvertService()
         {
             GamePath = App.Current.DataModel.GamePath;
-            App.Current.DataModel.Cps = ConfigValue(GamePath, "cps");
+            App.Current.DataModel.Cps = CPS_Converter(GamePath);
             CurrentPath = Environment.CurrentDirectory;
+        }
+
+        public string CPS_Converter(string GamePath)
+        {
+            return ConfigValue(GamePath, "cps") switch
+            {
+                "mihoyo" => "mihoyo",
+                "hoyoverse" => "hoyoverse",
+                "bilibili" => "bilibili",
+                "gw_PC" => "mihoyo",
+                "hoyoverse_PC" => "hoyoverse",
+                _ => string.Empty,
+            };
         }
 
         /// <summary>
@@ -208,7 +221,7 @@ namespace StarRail_Launcher.Service
         ///
         public string GetCurrentSchemeName()
         {
-            return ConfigValue(GamePath, "cps") switch
+            return CPS_Converter(GamePath) switch
             {
                 "mihoyo" => CN_DIRECTORY,
                 "hoyoverse" => GLOBAL_DIRECTORY,

@@ -39,6 +39,8 @@ namespace StarRail_Launcher.Service
             {
                 string gameClientType = App.Current.DataModel.Cps switch
                 {
+                    "gw_PC" => App.Current.Language.GameClientTypePStr,
+                    "hoyoverse_PC" => App.Current.Language.GameClientTypeMStr,
                     "mihoyo" => App.Current.Language.GameClientTypePStr,
                     // todo bilibili
                     "bilibili" => App.Current.Language.GameClientTypeBStr,
@@ -57,6 +59,8 @@ namespace StarRail_Launcher.Service
             {
                 int index = App.Current.DataModel.Cps switch
                 {
+                    "gw_PC" => 0,
+                    "hoyoverse_PC" => 2,
                     "mihoyo" => 0,
                     // todo bilibili
                     "bilibili" => 1,
@@ -77,7 +81,7 @@ namespace StarRail_Launcher.Service
             set
             {
                 SetProperty(ref _GamePortListIndex, value);
-                if (App.Current.DataModel.Cps != "hoyoverse")
+                if (App.Current.DataModel.Cps != "hoyoverse" || App.Current.DataModel.Cps != "hoyoverse_PC")
                 {
                     switch (value)
                     {
@@ -151,6 +155,7 @@ namespace StarRail_Launcher.Service
             {
                 return App.Current.DataModel.Cps switch
                 {
+                    "hoyoverse_PC" => "Hidden",
                     "hoyoverse" => "Hidden",
                     _ => "Visible",
                 };
