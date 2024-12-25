@@ -496,11 +496,11 @@ namespace StarRail_Launcher.ViewModels
         {
             if (new ConvertService().GetCurrentSchemeName() == "CnFile")
             {
-                FileHelper.OpenUrl("https://download.ganyu.us.kg/now/StarRail/GlobalFile.pkg");
+                FileHelper.OpenUrl("https://download.xingdream.top/now/StarRail/GlobalFile.pkg");
             }
             else
             {
-                FileHelper.OpenUrl("https://download.ganyu.us.kg/now/StarRail/CnFile.pkg");
+                FileHelper.OpenUrl("https://download.xingdream.top/now/StarRail/CnFile.pkg");
             }
         }
 
@@ -509,11 +509,11 @@ namespace StarRail_Launcher.ViewModels
         {
             if (new ConvertService().GetCurrentSchemeName() == "CnFile")
             {
-                FileHelper.OpenUrl("https://download.ganyu.us.kg/pre/StarRail/GlobalFile.pkg");
+                FileHelper.OpenUrl("https://download.xingdream.top/pre/StarRail/GlobalFile.pkg");
             }
             else
             {
-                FileHelper.OpenUrl("https://download.ganyu.us.kg/pre/StarRail/CnFile.pkg");
+                FileHelper.OpenUrl("https://download.xingdream.top/pre/StarRail/CnFile.pkg");
             }
         }
 

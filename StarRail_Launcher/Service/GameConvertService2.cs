@@ -287,7 +287,7 @@ namespace StarRail_Launcher.Service
                 {
                     ProcessStartInfo info = new()
                     {
-                        FileName = "https://download.ganyu.us.kg/now/StarRail/CnFile.pkg",
+                        FileName = "https://download.xingdream.top/now/StarRail/CnFile.pkg",
                         UseShellExecute = true,
                     };
                     Process.Start(info);
@@ -296,7 +296,7 @@ namespace StarRail_Launcher.Service
                 {
                     ProcessStartInfo info = new()
                     {
-                        FileName = "https://download.ganyu.us.kg/now/StarRail/GlobalFile.pkg",
+                        FileName = "https://download.xingdream.top/now/StarRail/GlobalFile.pkg",
                         UseShellExecute = true,
                     };
                     Process.Start(info);
